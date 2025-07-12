@@ -2,19 +2,6 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-
-    public static String getPn(int n) {
-        String res = "";
-        int size = 3 + 2*(n-1);
-        for (int i=0; i<size; i++) {
-            if (i%2 == 0) {
-                res += "I";
-            } else {
-                res += "O";
-            }
-        }
-        return res;
-    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -22,26 +9,22 @@ public class Main {
         int M = Integer.parseInt(br.readLine());
         String S = br.readLine();
 
-        String Pn = getPn(N);
-        // System.out.println(Pn);
+        int pattern = 0;
+        int count = 0;
+        char[] arr = S.toCharArray();
+        for (int i=1; i<M-1; i++) {
+            if (arr[i-1] == 'I' && arr[i] == 'O' && arr[i+1] == 'I') {
+                pattern++;
 
-        int res = 0;
-        int maxIndex = M - Pn.length() + 1;
-        for (int i=0; i < maxIndex; i++) {
-            int left = i;
-            boolean isContain = true;
-            for (int j=0; j<Pn.length(); j++) {
-                if (S.charAt(left) != Pn.charAt(j)) {
-                     isContain = false;
-                     break;
+                if (pattern == N) {
+                    pattern--;
+                    count++;
                 }
-                left++;
-            }
-
-            if (isContain) {
-                res++;
+                i++;
+            } else {
+                pattern = 0;
             }
         }
-        System.out.println(res);
+        System.out.println(count);
     }
 }
