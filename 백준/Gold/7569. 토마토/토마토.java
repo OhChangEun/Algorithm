@@ -1,5 +1,5 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
     static int M;
@@ -7,16 +7,14 @@ public class Main {
     static int H;
 
     static int box[][][];
-    static boolean isVisited[][][];
 
-    // 위, 아레, 상, 하, 좌, 우
-    static int[] dx = { 0, 0, 0, 0, -1, 1};
-    static int[] dy = { 0, 0, -1, 1, 0, 0};
-    static int[] dz = { -1, 1, 0, 0, 0, 0};
+    static int[] dx = { 0, 0, 0, 0, -1 , 1};
+    static int[] dy = { 0, 0, -1, 1, 0 , 0};
+    static int[] dz = { -1, 1, 0, 0, 0 , 0};
 
-    static class Box {
+    static class Point {
         int x, y, z;
-        public Box(int x, int y, int z) {
+        public Point(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -24,32 +22,29 @@ public class Main {
     }
 
     public static void bfs() {
-        // 큐에 방문하지 않은 점 집어 넣고,
-        Queue<Box> queue = new LinkedList<>();
-
-        // 상자에 있는 모든 익은 토마토 큐에 삽입
+        Queue<Point> queue = new LinkedList<>();
         for (int i=0; i<H; i++) {
             for (int j=0; j<N; j++) {
                 for (int k=0; k<M; k++) {
-                    if (box[i][j][k] == 1) {
-                        queue.add(new Box(i, j, k));
-                    }
+                    // 모든 익은 과일들 queue에 넣기
+                    if (box[i][j][k] == 1)
+                        queue.add(new Point(i, j, k));
                 }
             }
         }
 
         while (!queue.isEmpty()) {
-            Box curr = queue.poll();
+            Point curr = queue.poll();
 
-            for (int n=0; n<6; n++) {
-                int nx = curr.x + dx[n];
-                int ny = curr.y + dy[n];
-                int nz = curr.z + dz[n];
+            for (int i=0; i<6; i++) {
+                int nx = curr.x + dx[i];
+                int ny = curr.y + dy[i];
+                int nz = curr.z + dz[i];
 
                 if (nx >= 0 && nx < H && ny >= 0 && ny < N && nz >= 0 && nz < M) {
                     if (box[nx][ny][nz] == 0) {
                         box[nx][ny][nz] = box[curr.x][curr.y][curr.z] + 1;
-                        queue.add(new Box(nx, ny, nz));
+                        queue.add(new Point(nx, ny, nz));
                     }
                 }
             }
@@ -58,14 +53,13 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        String[] parts = br.readLine().split(" ");
 
-        M = Integer.parseInt(st.nextToken());
-        N = Integer.parseInt(st.nextToken());
-        H = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(parts[0]);
+        N = Integer.parseInt(parts[1]);
+        H = Integer.parseInt(parts[2]);
 
-        box = new int [H][N][M];
-        isVisited = new boolean [H][N][M];
+        box = new int[H][N][M];
 
         for (int i=0; i<H; i++) {
             for (int j=0; j<N; j++) {
@@ -76,24 +70,22 @@ public class Main {
             }
         }
 
-        // 박스에 값이 0이 없다면 0 출력
-        boolean hasUnripe = false;
+        boolean isAllRipened = true;
         for (int i=0; i<H; i++) {
             for (int j=0; j<N; j++) {
                 for (int k=0; k<M; k++) {
-                    if (box[i][j][k] == 0) {
-                        hasUnripe = true;
-                    }
+                    if (box[i][j][k] == 0)
+                        isAllRipened = false;
                 }
             }
         }
 
-        if (!hasUnripe) {
+        if (isAllRipened) {
             System.out.println(0);
             return;
         }
 
-        bfs();
+        bfs(); // 모든 토마토에 대해 순회
 
         int max = 0;
         for (int i=0; i<H; i++) {
@@ -107,6 +99,7 @@ public class Main {
                 }
             }
         }
-        System.out.println(max-1);
+
+        System.out.println(max - 1);
     }
 }
