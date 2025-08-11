@@ -1,22 +1,27 @@
 import java.util.*;
 
 class Solution {
-    public void bfs(int start, List<List<Integer>> graph, boolean[] visited, int[] distance) {
+    public int bfs(int start, List<List<Integer>> graph, boolean[] visited, int[] distance) {
    		Queue<Integer> queue = new LinkedList<>();	
         queue.offer(start);
         visited[start] = true;
       	distance[1] = 1; 
-        
+       
+        int count = 0;
         while (!queue.isEmpty()) {
-            int curr = queue.poll();
-       		// System.out.print(distance[curr] + " "); 
-            for (int next: graph.get(curr)) {
-                if (!visited[next]) {
-                    visited[next] = true;
-                    queue.offer(next);
-                    distance[next] = distance[curr] + 1;
-                }
-            } 
+            int size = queue.size();
+       		count = size;	
+            // System.out.print(distance[curr] + " "); 
+            for (int i=0; i<size; i++) {
+            	int curr = queue.poll();
+                for (int next: graph.get(curr)) {
+                    if (!visited[next]) {
+                        visited[next] = true;
+                        queue.offer(next);
+                        distance[next] = distance[curr] + 1;
+                    }
+                } 
+            }
             /*
             for (int i=0; i < graph.length; i++) {
                 if (graph[curr][i] == 1 && !visited[i]) {
@@ -27,6 +32,7 @@ class Solution {
             }
             */
         }
+        return count;
     } 
     
     public int solution(int n, int[][] edge) {
@@ -56,12 +62,14 @@ class Solution {
         
     	boolean[] visited = new boolean[n+1]; 
        	int[] distance = new int[n+1];
+        int count = 0;
         for (int i=1; i<=n; i++) {
             if (!visited[i]) {
-                bfs(1, graph, visited, distance);
+                count = bfs(1, graph, visited, distance);
             }
         }
-       
+      
+        /*
         int count = 0;
         int max = distance[0];
         for (int d: distance) {
@@ -74,7 +82,7 @@ class Solution {
                 count++;
             }
         }
-        
+        */
         return count;
     }
 }
