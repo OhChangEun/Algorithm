@@ -9,21 +9,21 @@ public class Main {
 
         int N = Integer.parseInt(br.readLine());
 
-        int[] distances = new int[N-1];
-        int[] costs = new int[N];
+        long[] distances = new long[N-1];
+        long[] costs = new long[N];
 
         String[] parts = br.readLine().split(" ");
         for (int i=0; i<N-1; i++) {
-            distances[i] = Integer.parseInt(parts[i]);
+            distances[i] = Long.parseLong(parts[i]);
         }
 
         parts = br.readLine().split(" ");
         for (int i=0; i<N; i++) {
-            costs[i] = Integer.parseInt(parts[i]);
+            costs[i] = Long.parseLong(parts[i]);
         }
 
-        int result = 0;
-        int min = costs[0];
+        long result = 0;
+        long min = costs[0];
         for (int i=0; i<N-1; i++) {
             if (min > costs[i+1]) {
                 result += min * distances[i];
