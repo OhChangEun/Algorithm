@@ -1,38 +1,52 @@
+import java.util.*;
+
 class Solution {
+    List<List<Integer>> winGraph = new ArrayList<>();
+    List<List<Integer>> loseGraph = new ArrayList<>();
+    
     public int solution(int n, int[][] results) {
-        boolean[][] graph = new boolean[n+1][n+1];
+        for (int i=0; i<=n; i++) {
+            winGraph.add(new ArrayList<>());
+            loseGraph.add(new ArrayList<>());
+        }
         
         for (int[] result: results) {
             int win = result[0];
             int lose = result[1];
-        	
-            graph[win][lose] = true;
+            
+            winGraph.get(win).add(lose);
+            loseGraph.get(lose).add(win);
         }
-        
-        for (int k=1; k<=n; k++) { // 경유 선수 
-            for (int i=1; i<=n; i++) { // 출발 선수 
-                for (int j=1; j<=n; j++) { // 도착 선수
-                    if (graph[i][k] && graph[k][j]) {
-                        graph[i][j] = true;
-                    }
-                }
-            }
-        }
-        
-        int answer = 0; 
+
+        int answer = 0;
         for (int i=1; i<=n; i++) {
-            int count = 0;
-            for (int j=1; j<=n; j++) {
-                if (i == j) continue; 
-                if (graph[i][j] || graph[j][i]) {
-                    count++;
-                }
-            }
-            if (count == n-1) {
+            int winCount = bfs(i, winGraph, n);
+            int loseCount = bfs(i, loseGraph, n);
+            
+            if (winCount + loseCount == n-1) {
                 answer++;
             }
         }
         
         return answer;
+    }
+    public int bfs(int start, List<List<Integer>> graph, int n) {
+        boolean[] visited = new boolean[n+1];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+		visited[start] = true;
+       
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            for (int next: graph.get(curr)) {
+                if (!visited[next]) {
+                    visited[next] = true;
+                    queue.offer(next);
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }
