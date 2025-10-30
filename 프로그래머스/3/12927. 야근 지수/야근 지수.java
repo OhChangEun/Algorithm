@@ -2,33 +2,23 @@ import java.util.*;
 
 class Solution {
     public long solution(int n, int[] works) {
-        long answer = 0;
-       
         PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
-        
-        for (int workTime: works) {
-            maxHeap.add(workTime);
+        for (int work: works) {
+            maxHeap.add(work);
         }
         
-        while (n>0) {
-           	int maxWorkTime = maxHeap.poll();
-           
-            // works가 0을 maxHeap에 넣으면 안되므로 
-            if (maxWorkTime > 1) {
-                maxHeap.add(maxWorkTime-1);
+       	for (int i=0; i<n; i++) {
+            int max = maxHeap.poll();
+            if (max > 1) {
+               	maxHeap.add(max - 1);
             }
-            n--;
-            
-            if (maxHeap.isEmpty()) {
-                return 0;
-            }
-        }
-        
-        while (!maxHeap.isEmpty()) {
-            int num = maxHeap.poll();
-            answer += (long)(num * num);
-        }
-        
-        return answer;
+            if (maxHeap.isEmpty()) return 0;
+        } 
+        long result = 0;
+   		while (!maxHeap.isEmpty()) {
+       		int num = maxHeap.poll();
+            result += num * num;
+        } 
+        return result;
     }
 }
