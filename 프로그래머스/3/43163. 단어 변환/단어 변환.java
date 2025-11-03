@@ -2,82 +2,70 @@ import java.util.*;
 
 class Solution {
     public int solution(String begin, String target, String[] words) {
-        int answer = 0;
-      
-        int targetIndex = 0;
-        List<List<Integer>> graph = new ArrayList<>();
-        for (int i=0; i<words.length+1; i++) {
-            graph.add(new ArrayList<>());
-        }
-      
-        boolean isSame = false;
-        List<String> list = new ArrayList<>();
-        // 첫 노드에 begin
-        list.add(begin);
-        for (int i=0; i<words.length; i++) { 
+   		List<String> list = new ArrayList<>();
+		list.add(begin);	
+     
+        boolean hasTarget = false;
+        int targetIndex = -1;
+        for (int i=0; i<words.length; i++) {
+       		list.add(words[i]);
             if (words[i].equals(target)) {
-                isSame = true;
-               	targetIndex = i; 
-            }
-            list.add(words[i]);
-        }
-        
-        if (!isSame) 
-            return 0;
-        
-        int size = list.size();
-        System.out.println(size);
-        
-        for (int i=0; i<size; i++) {
-            for (int j=1; j<size; j++) {
-               	if (i == j) continue; 
-                char[] word1 = list.get(i).toCharArray();
-                char[] word2 = list.get(j).toCharArray();
-               
-                int count = 0;
-                for (int k=0; k<word1.length; k++) {
-                    if (word1[k] != word2[k]) {
-                        count++;
-                    }
-                }
-                
-                // 만약 일치하지 않는 문자가 2개 이하라면 
-                // 자기 자신을 제외하고
-                if (count < 2) {
-                    graph.get(i).add(j);
-                    System.out.println(i + " " + j);
-                }
+                hasTarget = true;
+                targetIndex = i + 1;
             }
         }
-        
-        System.out.println(targetIndex + 1);
-        int distance = bfs(0, targetIndex+1, graph);
-        return distance;
-    }
-    
-    public int bfs(int start, int target, List<List<Integer>> graph) {
-        Queue<Integer> queue = new LinkedList<>();
-        boolean[] visited = new boolean[graph.size() + 1];
-        int[] distance = new int[graph.size() + 1];
+        if (!hasTarget) return 0;
       
-        queue.add(start);
-        visited[start] = true;
-        distance[start] = 0;
+        int size = list.size();
+        List<List<Integer>> graph = new ArrayList<>(); 
+        for (int i=0; i<size; i++) {
+           	graph.add(new ArrayList<>()); 
+        }
         
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
-            System.out.println("curr: " + curr);
-            if (target == curr) {
-           		return distance[curr];   
-            }
-            for (int next: graph.get(curr)) {
-                if (!visited[next]) {
-                    visited[next] = true;
-                    distance[next] = distance[curr] + 1;
-                    queue.add(next);
+        for (int i=0; i<size-1; i++) {
+           	for (int j=i+1; j<size; j++) {
+                if (isConvertible(list.get(i), list.get(j))) {
+                    graph.get(i).add(j);
+                    graph.get(j).add(i);
                 }
+            } 
+        }
+       	System.out.println(graph);
+        int start = 0;
+        int result = bfs(start, targetIndex, graph);
+        return result;
+    }
+   	public int bfs(int start, int targetIndex, List<List<Integer>> graph) {
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] visited = new boolean[graph.size()];
+        int[] distance = new int[graph.size()];
+        
+        visited[start] = true; 
+        queue.offer(start);
+        
+        while(!queue.isEmpty()) {
+            int curr = queue.poll();
+            if (curr == targetIndex) return distance[curr];
+            
+            for (int next: graph.get(curr)) {
+            	if (!visited[next]) {
+                    visited[next] = true; 
+                    distance[next] = distance[curr] + 1; 
+                    queue.offer(next);
+                }    
             }
         }
-        return -1;
+        
+        return 0;
+    } 
+    
+    
+    public boolean isConvertible(String a, String b) {
+        int diff = 0;
+        for (int i=0; i<a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) diff++;
+            if (diff > 1) return false;
+        }
+        return diff == 1;
     }
 }
