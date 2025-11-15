@@ -2,27 +2,24 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] A, int[] B) {
-        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-      	// Queue<Integer> lose = new LinkedList<>();
-    
-        int loseCount = 0;
+       	PriorityQueue<Integer> pq = new PriorityQueue<>();
       
-        for (int i=0; i<B.length; i++) {
-            minHeap.add(B[i]);
+        for (int b: B) {
+            pq.add(b);
         }
         
         int count = 0;
         Arrays.sort(A);
         Arrays.sort(B);
-       	for (int i=0; i<A.length; i++) {	
-           	while (!minHeap.isEmpty()) {
-            	int minB = minHeap.poll();
+        for (int i=0; i<A.length; i++) {
+       		while (!pq.isEmpty()) {
+                int minB = pq.poll();
                 if (A[i] < minB) {
-                	count++;
+                    count++;
                     break;
                 }
             }     
-        } 
+        }
         
         return count;
     }
