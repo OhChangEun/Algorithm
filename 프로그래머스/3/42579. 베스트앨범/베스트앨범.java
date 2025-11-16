@@ -1,40 +1,50 @@
 import java.util.*;
 
 class Solution {
+    class Song {
+        int index;
+        int value;
+        public Song(int index, int value) {
+            this.index = index;
+            this.value = value;
+        }
+    }
     public int[] solution(String[] genres, int[] plays) {
-        int[] answer = {};
-        
         Map<String, Integer> sums = new HashMap<>();
-        Map<String, List<int[]>> list = new HashMap<>();
+        Map<String, List<Song>> songList = new HashMap<>();
         
         for (int i=0; i<genres.length; i++) {
             sums.put(genres[i], sums.getOrDefault(genres[i], 0) + plays[i]);
-           
-            // 들어갈 공간 만들어주고,
-            if (!list.containsKey(genres[i])) {
-                list.put(genres[i], new ArrayList<>());
+            
+            if (!songList.containsKey(genres[i])) {
+                songList.put(genres[i], new ArrayList<>());
             }
-            list.get(genres[i]).add(new int[] {i, plays[i]});
+            
+            songList.get(genres[i]).add(new Song(i, plays[i]));
         }
-        
+        // System.out.println(sums); 
+        // System.out.println(songList); 
+       
         List<String> genreOrder = new ArrayList<>(sums.keySet());
         genreOrder.sort((a, b) -> sums.get(b) - sums.get(a));
-        
+        // System.out.println(genreOrder); 
+      
         List<Integer> result = new ArrayList<>();
         for (String genre: genreOrder) {
-            List<int[]> songs = list.get(genre);
+            List<Song> songs = songList.get(genre);
             songs.sort((a, b) -> {
-                if (a[1] == b[1]) return a[0] - b[0];
-             	return b[1] - a[1]; 
+                if (a.value == b.value) return a.index - b.index; 
+                return b.value - a.value;
             });
             
             for (int i=0; i<Math.min(2, songs.size()); i++) {
-                result.add(songs.get(i)[0]);
+                result.add(songs.get(i).index); 
             }
         }
-        
-        int[] res = new int[result.size()];
-        for (int i=0; i<result.size(); i++) {
+      
+        int n = result.size();
+        int[] res = new int[n];
+        for (int i=0; i<n; i++) {
             res[i] = result.get(i);
         }
         
