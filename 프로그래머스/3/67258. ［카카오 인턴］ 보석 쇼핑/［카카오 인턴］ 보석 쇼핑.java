@@ -2,45 +2,36 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] gems) {
-        int[] answer = {};
-      
-        Map<String, Integer> gemsMap = new HashMap<>();
+        Set<String> kindOfGems = new HashSet<>(); 
         for (String gem: gems) {
-        	gemsMap.put(gem, gemsMap.getOrDefault(gem, 0) + 1);    
+            kindOfGems.add(gem);
         }
-        
-        //System.out.println(gemsMap);
-        int totalGemsCounts = gemsMap.size(); // 보석 종류
-        
-        int[] min = {0, gems.length-1};
+        int totalKinds = kindOfGems.size();
+       
         int left = 0;
-        int right = 0;
-        Map<String, Integer> currMap = new HashMap<>();
-
-        for (right = 0; right < gems.length; right++) {
-           	String gem = gems[right]; 
-            currMap.put(gem, currMap.getOrDefault(gem, 0) + 1);
-            // System.out.println(currMap);
+        int bestLeft = 0, bestRight = gems.length - 1;
+        Map<String, Integer> currGems = new HashMap<>();
+        for (int right=0; right<gems.length; right++) {
+            String gemName = gems[right];
+            currGems.put(gemName, currGems.getOrDefault(gemName, 0) + 1);
+            // System.out.println(currGems);
             
-            // 필요한 보석 종류가 됐으면 왼쪽 포인터 이동
-            while (currMap.size() >= totalGemsCounts) {                        
-                // System.out.println(right + " " + left);
-                if (right - left < min[1] - min[0]) {
-                    min[1] = right; // 1-based
-                    min[0] = left;
+            while (currGems.size() == totalKinds) {
+                int currLen = right - left; 
+                int bestLen = bestRight - bestLeft;
+                
+                if (currLen < bestLen || (currLen == bestLen && currLen < bestLen)) {
+                    bestLeft = left; 
+                    bestRight = right; 
                 }
                 
-           		String removeGem = gems[left];	
-                currMap.put(removeGem, currMap.getOrDefault(removeGem, 0) - 1);
-                if (currMap.get(removeGem) == 0) {
-                    currMap.remove(removeGem);
-                }
-            	// System.out.println(currMap);
-                left++;
+                String leftGem = gems[left];
+                currGems.put(leftGem, currGems.get(leftGem) - 1); // 현재 보석들 중 가장 왼쪽 보석 내려놓기 
+                if (currGems.get(leftGem) == 0) currGems.remove(leftGem); // 없으면 map에서 삭제 
+                left++; // 현재 left를 이동 
             }
-
         }
         
-        return new int[] { min[0] + 1, min[1] + 1};
+        return new int[] {bestLeft + 1, bestRight + 1};
     }
 }
