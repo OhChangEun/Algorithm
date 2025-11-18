@@ -1,17 +1,18 @@
-import java.util.*;
-
 class Solution {
     public int solution(int[] stones, int k) {
-        int answer = 0;
- 
-        int left = 0;
-        int right = Arrays.stream(stones).max().getAsInt();
-       
+        int max = 0; 
+        for (int stone: stones) {
+            max = Math.max(max, stone);
+        }
+        
+   		int answer = 0; 
+        int left = 1; 
+        int right = max;
         while (left <= right) {
             int mid = (left + right) / 2;
-           
-            if (pass(stones, mid, k)) {
-                answer = mid;
+            System.out.println(mid);
+            if (canCross(stones, mid, k)) {
+                answer = mid; 
                 left = mid + 1;
             } else {
                 right = mid - 1;
@@ -20,18 +21,16 @@ class Solution {
         
         return answer;
     }
-    public boolean pass(int[] stones, int mid, int k) {
-        int count = 0; // mid 명이 건널 수 없는 연속되는 돌 개수
-        
+    
+    public boolean canCross(int[] stones, int mid, int k) {
+        int count = 0; 
         for (int stone: stones) {
             if (stone - mid < 0) {
-                count++;
+               count++;
             } else {
-                count = 0;
+               count = 0;
             }
-            
-            if (count >= k) 
-                return false;
+            if (count >= k) return false;
         }
         return true;
     }
