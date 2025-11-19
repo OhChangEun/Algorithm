@@ -1,50 +1,47 @@
 import java.util.*;
 
 class Solution {
-    
-    public void bfs(int start, List<List<Integer>> graph, int[] distance) {
-       	Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
-        distance[start] = 0;
-        
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
-            // System.out.print(curr + " ");
-            for (int next: graph.get(curr)) {
-                if (distance[next] == -1) {
-                    distance[next] = distance[curr] + 1;
-                    queue.offer(next);
-                }
-            }
-        }
-    }
     public int[] solution(int n, int[][] roads, int[] sources, int destination) {
-        int[] answer = {};
-       
         List<List<Integer>> graph = new ArrayList<>();
         for (int i=0; i<=n; i++) {
             graph.add(new ArrayList<>());
         }
-        
-        for (int[] road: roads) {
-            int a = road[0];
-            int b = road[1];
-           
-            graph.get(a).add(b);
-            graph.get(b).add(a);
-        }
         // System.out.println(graph);
-      
-        int[] distance = new int[n+1];
-        Arrays.fill(distance, -1);
-        
-        bfs(destination, graph, distance);
+        for (int[] road: roads) {
+            int u = road[0];
+            int v = road[1];
+            graph.get(u).add(v);    
+            graph.get(v).add(u);    
+        }
        
-        answer = new int[sources.length];
-       	for (int i=0; i<sources.length; i++) {
-            answer[i] = distance[sources[i]];
-        } 
-                
-        return answer;
+        // 도착점 기준으로 시작점
+        int[] dist = bfs(n, graph, sources, destination); 
+        int[] result = new int[sources.length];
+        for (int i=0; i<sources.length; i++) {
+            result[i] = dist[sources[i]];
+        }
+        return result;
+    }
+    public int[] bfs(int n, List<List<Integer>> graph, int[] sources, int start) {
+        int target = sources[0];  
+        int[] dist = new int[n + 1]; 
+        Arrays.fill(dist, -1);
+        
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        dist[start] = 0; 
+        
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            
+            for (int next: graph.get(curr)) {
+                if (dist[next] == -1) {
+                    dist[next] = dist[curr] + 1;
+                    queue.offer(next);
+                }
+            }
+        }
+        
+        return dist;
     }
 }
