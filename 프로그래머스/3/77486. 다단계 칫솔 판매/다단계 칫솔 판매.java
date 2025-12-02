@@ -1,39 +1,37 @@
 import java.util.*;
 
 class Solution {
-	Map<String, Integer> map = new HashMap<>();
+    Map<String, Integer> enrollMap = new HashMap<>();
     Map<String, String> parentMap = new HashMap<>();
     
-    public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
-  		int size = enroll.length;	
-        int[] answer = new int[size];
+    public void dfs (String curr, int money) {
+        if (curr.equals("-") || money == 0) return;   
         
-        for (int i=0; i<size; i++) {
-            map.put(enroll[i], 0);
+        int sendMoney = money / 10;
+        int myMoney = money - sendMoney;
+        enrollMap.put(curr, enrollMap.getOrDefault(curr, 0) + myMoney);
+        
+        dfs(parentMap.get(curr), sendMoney);
+    } 
+    
+    public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
+        int n = enroll.length;
+        for (int i = 0; i < n; i++) {
+            enrollMap.put(enroll[i], 0);
             parentMap.put(enroll[i], referral[i]);
         }
         
-        for (int i=0; i<seller.length; i++) {
-            String man = seller[i];
-            int profit = amount[i] * 100;
-            dfs(man, profit);
+        for (int i = 0; i < seller.length; i++) {
+            String name = seller[i];
+            int profit = amount[i] * 100; // 100원 단위
+            dfs(name, profit);
+        }
+     
+        int[] answer = new int[n];
+        for (int i = 0; i < n; i++) {
+            answer[i] = enrollMap.getOrDefault(enroll[i], 0);
         }
         
-        for (int i=0; i<size; i++) {
-            String man = enroll[i];
-            answer[i] = map.get(man);
-        }
-        // System.out.println(map);
         return answer;
-    }
-    public void dfs(String man, int profit) {
-        if (man.equals("-") || profit == 0) {
-            return; 
-        }
-        int give = profit / 10;
-        int keep = profit - give;
-      	map.put(man, map.get(man) + keep); 
-        
-        dfs(parentMap.get(man), give);
     }
 }
