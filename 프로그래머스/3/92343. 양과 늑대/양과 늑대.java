@@ -1,46 +1,45 @@
 import java.util.*;
 
 class Solution {
-    int answer = 0;
-   
+    int result = 0;
     public int solution(int[] info, int[][] edges) {
-        int nodeSize = info.length;
-        List<Integer>[] tree = new ArrayList[nodeSize];
-        for (int i=0; i<nodeSize; i++) {
-            tree[i] = new ArrayList<>();
-        }
-        
+   		int n = info.length;	
+        List<List<Integer>> graph = new ArrayList<>();
+       	for (int i=0; i<n; i++) {
+            graph.add(new ArrayList<>());
+        } 
+       
         for (int[] edge: edges) {
-            tree[edge[0]].add(edge[1]);
+            int u = edge[0];
+            int v = edge[1];
+            graph.get(u).add(v);
         }
         
-        List<Integer> nextNodes = new ArrayList<>();
         int start = 0;
-        nextNodes.add(start);
-        dfs(tree, info, start, 0, 0, nextNodes);
+        List<Integer> candidates = new ArrayList<>();
+       	candidates.add(start);
         
-        return answer;
+        dfs(info, graph, start, 0, 0, candidates);
+        
+        return result;
     }
-    
-    public void dfs(List<Integer>[] tree, int[] info, int curr, int sheep, int wolf, List<Integer> nextNodes) {
-        if (info[curr] == 0) 
-            sheep++;
-        else 
-            wolf++;
+    public void dfs(int[] info, List<List<Integer>> graph, int curr, int sheep, int wolf, List<Integer> candidates)  {
+        if (info[curr] == 0) sheep++;
+        else wolf++; 
         
-        if (wolf >= sheep) return; 
+        if (sheep <= wolf) return; 
+       
+        result = Math.max(result, sheep); 
         
-        answer = Math.max(answer, sheep);
+        List<Integer> nextCandidates = new ArrayList<>(candidates); 
+        nextCandidates.remove(Integer.valueOf(curr));
         
-        List<Integer> newNext = new ArrayList<>(nextNodes);
-        newNext.remove(Integer.valueOf(curr));
-        for (int child: tree[curr]) {
-            newNext.add(child);
+        for (int child: graph.get(curr)) {
+    		nextCandidates.add(child);        
         }
         
-        for (int next: newNext) {
-            dfs(tree, info, next, sheep, wolf, newNext);
+        for (int next: nextCandidates) {
+           	dfs(info, graph, next, sheep, wolf, nextCandidates); 
         }
     }
 }
-
