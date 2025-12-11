@@ -14,8 +14,7 @@ class Solution {
            		newLock[i][j] = lock[i-M+1][j-M+1];
             }
         }
-        /*
-        for (int i=0; i<size; i++) {
+        /* for (int i=0; i<size; i++) {vK
         	for (int j=0; j<size; j++) {
            		System.out.print(newLock[i][j] + " "); 
             }
