@@ -3,36 +3,33 @@ import java.util.*;
 class Solution {
     public int solution(int[] a) {
         int answer = -1;
-       
-        int n = a.length;
-        if (n < 2) {
-            return 0;
+        
+        int n = a.length; 
+        if (n < 2) return 0; 
+        
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int num : a) {
+           	freq.put(num, freq.getOrDefault(num, 0) + 1); 
         }
         
-        // 숫자 개수 세기 
-       	Map<Integer, Integer> freq = new HashMap<>();
-        for (int num: a) {
-            freq.put(num, freq.getOrDefault(num, 0) + 1);
-        }
-      
-        //System.out.println(num);
         int maxLen = 0;
-        for (int num: freq.keySet()) {
-            if (freq.get(num) * 2 <= maxLen) continue; 
-       		
-            int i = 0; 
-            int count = 0;
-            while (i < n-1) {
-               	if ((a[i] == num || a[i + 1] == num) && a[i] != a[i + 1]) {
-                   	count++;
+        for (int star: freq.keySet()) {
+            if (freq.get(star) * 2 <= maxLen) continue;
+            
+            int i = 0;
+            int starCount = 0;
+            while (i < n - 1) {
+                if ((a[i] == star || a[i + 1] == star) && a[i] != a[i + 1]) {
                     i += 2;
+                    starCount++;
                 } else {
                     i++;
                 }
             }
-       
-            maxLen = Math.max(maxLen, count * 2);
+            maxLen = Math.max(maxLen, starCount * 2);
         }
+        
+        // System.out.println(freq);
         
         return maxLen;
     }
