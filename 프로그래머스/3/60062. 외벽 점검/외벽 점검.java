@@ -1,75 +1,73 @@
-import java.util.*;
-
 class Solution {
+   	int weakLen; 
+    boolean[] visited;
+    int[] extended; 
+    
+    int result = Integer.MAX_VALUE;
+    boolean found = false; 
     public int solution(int n, int[] weak, int[] dist) {
-        int w = weak.length;
-   	
-        // [1, 5, 6, 10, 13, 17, 18, 22]
-        int[] extended = new int[w * 2];
-        for (int i=0; i<w; i++) {
-            extended[i] = weak[i];
-            extended[i + w] = weak[i] + n;
+   		weakLen = weak.length;
+
+        extended = new int[weakLen * 2]; 
+        for (int i = 0; i < weakLen; i++) {
+			extended[i] = weak[i]; 
+            extended[i + weakLen] = weak[i] + n; 
         }
         
-        // 친구들의 모든 순열 
-        List<int[]> perms = new ArrayList<>();
-        boolean[] used = new boolean[dist.length];
-        permute(0, perms, dist, new int[dist.length], used); // 깊이, 결과, 친구 배열, 현재 배열, 방문 여부
-        
-        int result = Integer.MAX_VALUE;
-        
-        // 모든 취약점에 대해 
-        // 모든 친구들을 대입해서 
-        // 최소 인원을 구한다. 
-     	for (int start = 0; start < w; start++) {
-           	for (int[] perm: perms) {
-             	int friendIdx = 0;
-                int coverRange = extended[start] + perm[friendIdx];
-              
-                boolean isSuccess = true;
-                for (int idx = start; idx < start + w; idx++) {
-            		if (extended[idx] > coverRange) { // 현재 친구가 커버해야할 범위를 벗어난 경우 
-                        friendIdx++; // 다음 친구 
-                        if (friendIdx >= dist.length) {
-                			isSuccess = false; 
-                            break;
-                        }
-                        coverRange = extended[idx] + perm[friendIdx];
-                    }
-                }
-                if (isSuccess) {
-                    result = Math.min(result, friendIdx + 1);
-                }
-            } 
-        } 
         /*
         for (int num: extended) {
             System.out.print(num + " ");
         }
-        for (int[] perm: perms) {
-           	for (int num: perm) {
-       			System.out.print(num + " ");
-            } 
-            System.out.println();
-        }
-        */
+		*/
         
-        return result == Integer.MAX_VALUE ? -1 : result;
+        for (int i = 1; i <= dist.length; i++) {
+            visited = new boolean[dist.length];
+            permute(0, new int[i], dist);
+            if (found) return i;
+        }
+        
+        return -1;
     }
     
-    private void permute(int depth, List<int[]> perms, int[] dist, int[] curr, boolean[] used) {
-        if (depth == dist.length) {
-           	perms.add(curr.clone()); 
-            return; 
+    // 순열을 통한 가능한 점검가능한 친구들의 모든 순서
+    // 순열 결과를 selected를 통해 check함수에 넘김 
+    public void permute(int depth, int[] selected, int[] dist) {
+        if (depth == selected.length) {
+            check(selected);
+            return;
         }
         
-        for (int i=0; i<dist.length; i++) {
-            if (!used[i]) {
-                used[i] = true;
-               	curr[depth] = dist[i];
-               	permute(depth + 1, perms, dist, curr, used); 
-                used[i] = false;
+        for (int i = 0; i < dist.length; i++) {
+            if (!visited[i]) {
+                visited[i] = true; 
+                selected[depth] = dist[i];
+                permute(depth + 1, selected, dist);
+                visited[i] = false;
             }
         }
+    }
+    public void check(int[] friends) {
+        for (int start = 0; start < weakLen; start++) {
+            int friendsIdx = 0; 
+            int checkRange = extended[start] + friends[friendsIdx];
+            
+            boolean allCover = true; 
+            for (int i = start; i < start + weakLen; i++) {
+                if (checkRange >= extended[i]) continue; // 커버 가능한 범위는 다 무시 
+                
+                friendsIdx++; // 커버 불가능할 때 다음 친구 
+                if (friendsIdx >= friends.length) { // 친구 수를 넘어서면 조합 불가능한 것으로 판단 
+                    allCover = false; 
+                    break; 
+                } 
+                checkRange = extended[i] + friends[friendsIdx]; // 범위 갱신 
+            }
+            
+            if (allCover) {
+                result = friends.length; 
+                found = true; 
+                return; 
+            }
+        }    
     }
 }
