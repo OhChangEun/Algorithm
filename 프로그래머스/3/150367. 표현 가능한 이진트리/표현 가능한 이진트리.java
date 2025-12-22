@@ -1,23 +1,21 @@
 class Solution {
     public int[] solution(long[] numbers) {
-   		int n = numbers.length; 
-       	int[] answer = new int[n];
+        int n = numbers.length; 
+        int[] answer = new int[n]; 
         
         for (int i = 0; i < n; i++) {
-           	String binStr = Long.toBinaryString(numbers[i]);
+            String binStr = Long.toBinaryString(numbers[i]);
             
-            int len = 1;
-            int binLen = binStr.length();
+            int len = 1; 
+            int binLen = binStr.length(); 
             while (len < binLen) {
                 len = len * 2 + 1; 
             }
+            binStr = "0".repeat(len - binLen) + binStr; 
             
-            binStr = "0".repeat(len - binLen) + binStr;
-            // System.out.println(binStr);
-            
-            answer[i] = isValidTree(binStr) ? 1 : 0;
-        } 
-   		return answer;  
+            answer[i] = isValidTree(binStr) ? 1: 0;
+        }
+        return answer;
     }
     
     public boolean isValidTree(String str) {
