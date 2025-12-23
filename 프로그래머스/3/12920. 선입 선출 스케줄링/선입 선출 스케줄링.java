@@ -1,43 +1,47 @@
 class Solution {
     public int solution(int n, int[] cores) {
-        if (n <= cores.length) return n;
+        int maxCore = 0; 
+        for (int core: cores) {
+            maxCore = Math.max(maxCore, core);
+        }
+      
+        n -= cores.length; 
         
-        n -= cores.length;
-        
+        int finishedTime = 0;
+       
         int left = 0;
-        int right = 10000 * n; 
-        int targetTime = 0;
+        int right = maxCore * n; 
         while (left <= right) {
-            int mid = (left + right) / 2;
-           	int completedJobs = countCompletedJobs(mid, cores);
+            int mid = (left + right) / 2; 
+            int finishedJob = getFinishedJob(cores, mid);
             
-            if (completedJobs >= n) {
-                targetTime = mid;
+            if (finishedJob >= n) {
+                finishedTime = mid; 
                 right = mid - 1;
             } else {
                 left = mid + 1;
             }
         }
-       
-        // System.out.println(targetTime);
-        int completedBeforeJobs = countCompletedJobs(targetTime - 1, cores);
-        // System.out.println(completedBeforeJobs);
-        for (int i=0; i<cores.length; i++) {
-            if (targetTime % cores[i] == 0) {
-            	completedBeforeJobs++;
-               	if (completedBeforeJobs == n) {
-                    return i + 1;
-                } 
+        
+        int result = 0;
+        int prevFinishedJob = getFinishedJob(cores, finishedTime - 1);
+        for (int i = 0; i < cores.length; i++) {
+            if (finishedTime % cores[i] == 0) {
+                prevFinishedJob++;
+                if (prevFinishedJob == n) {
+                    result = i + 1; 
+                    break; 
+                }    
             }
         }
-        
-        return -1;
+        return result; 
     }
-    private int countCompletedJobs(int time, int[] cores) {
-        int count = 0;
+    
+    private int getFinishedJob(int[] cores, int time) {
+        int total = 0; 
         for (int core: cores) {
-            count += time / core; 
+            total += time / core;
         }
-        return count;
+        return total;
     }
 }
