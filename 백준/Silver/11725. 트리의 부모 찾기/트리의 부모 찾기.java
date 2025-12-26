@@ -1,53 +1,52 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static List<List<Integer>> graph;
-    static boolean[] visited;
-    static int[] parent;
+    private static int n;
+    private static int[] parent;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
 
-        int N = Integer.parseInt(br.readLine());
-        graph = new ArrayList<>();
-
-        // 1~N
-        for (int i=0; i<=N; i++) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i <= n; i++) {
             graph.add(new ArrayList<>());
         }
 
-        for (int i=0; i<N-1; i++) {
+        for (int i = 0; i < n - 1; i++) {
             String[] parts = br.readLine().split(" ");
-            int u = Integer.parseInt(parts[0]);
-            int v = Integer.parseInt(parts[1]);
+            int a = Integer.parseInt(parts[0]);
+            int b = Integer.parseInt(parts[1]);
 
-            graph.get(u).add(v);
-            graph.get(v).add(u);
+            graph.get(a).add(b);
+            graph.get(b).add(a);
         }
 
-        parent = new int[N + 1];
-        visited = new boolean[N + 1];
-        bfs(1);
+        parent = new int[n + 1];
+        bfs(n, graph, 1);
 
-        for (int i=2; i<=N; i++) {
+        for (int i = 2; i <= n; i++) {
             System.out.println(parent[i]);
         }
     }
 
-    static public void bfs(int start) {
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
+    private static void bfs(int n, List<List<Integer>> graph, int start) {
+        boolean[] visited = new boolean[n + 1];
         visited[start] = true;
 
-        while (!queue.isEmpty()) {
-            int parentNode = queue.poll();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
 
-            for (int child: graph.get(parentNode)) {
-                if (!visited[child]) {
-                    visited[child] = true;
-                    queue.offer(child);
-                    parent[child] = parentNode;
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            for (int next: graph.get(curr)) {
+                if (!visited[next]) {
+                    parent[next] = curr;
+                    visited[next] = true;
+                    queue.offer(next);
                 }
             }
         }
