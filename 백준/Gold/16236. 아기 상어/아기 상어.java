@@ -4,97 +4,80 @@ import java.io.*;
 public class Main {
     static int n;
     static int[][] map;
-
-    public static int[] dx = { 0, -1, 0, 1 };
-    public static int[] dy = { -1, 0, 1, 0 };
-
-    static int sharkSize = 2;
-
-    static class Fish {
-        int y, x;
+    static int fishSize = 2;
+    static int minTime = 0;
+    static int eatCount = 0;
+    static class Node implements Comparable<Node> {
+        int x, y;
         int dist;
-        public Fish(int y, int x, int dist) {
+        public Node(int y, int x, int dist) {
             this.y = y;
             this.x = x;
             this.dist = dist;
         }
+        @Override
+        public int compareTo(Node other) {
+            if (this.dist != other.dist) return this.dist - other.dist;
+            if (this.y != other.y) return this.y - other.y;
+            return this.x - other.x;
+        }
     }
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] parts = br.readLine().split(" ");
+        n = Integer.parseInt(br.readLine());
 
-        int startY = 0, startX = 0;
-        n = Integer.parseInt(parts[0]);
         map = new int[n][n];
+        int startY = 0, startX = 0;
         for (int i = 0; i < n; i++) {
-            parts = br.readLine().split(" ");
+            String[] parts = br.readLine().split(" ");
             for (int j = 0; j < n; j++) {
                 int num = Integer.parseInt(parts[j]);
-                map[i][j] = num;
 
+                map[i][j] = num;
                 if (num == 9) {
+                    map[i][j] = 0;
                     startY = i;
                     startX = j;
-                    map[i][j] = 0;
                 }
             }
         }
 
-        int eatCount = 0;
-        int minTime = 0;
         while (true) {
-            Fish target = bfs(startY, startX);
-            if (target == null)
-                break;
+            Node fish = bfs(startY, startX);
+            if (fish == null) break;
 
-            startY = target.y;
-            startX = target.x;
-            minTime += target.dist;
+            startY = fish.y;
+            startX = fish.x;
+            minTime += fish.dist;
             eatCount++;
             map[startY][startX] = 0;
 
-            if (eatCount >= sharkSize) {
-                sharkSize++;
+            if (eatCount >= fishSize) {
+                fishSize++;
                 eatCount = 0;
             }
         }
 
         System.out.println(minTime);
     }
-    private static void print() {
-        for (int[] row: map) {
-            for (int num: row) {
-                System.out.print(num + " ");
-            }
-            System.out.println();
-        }
-    }
-    private static Fish bfs(int y, int x) {
-        int[][] dist = new int[n][n];
-        for (int i = 0; i < n; i++) {
-            Arrays.fill(dist[i], -1);
-        }
-        dist[y][x] = 0;
 
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[] {y, x});
+    static int[] dy = { -1, 0, 1, 0 };
+    static int[] dx = { 0, -1, 0, 1 };
 
-        List<Fish> fishList = new ArrayList<>();
+    private static Node bfs(int y, int x) {
+        boolean[][] visited = new boolean[n][n];
+        visited[y][x] = true;
 
-        int minDist = Integer.MAX_VALUE;
-        while (!queue.isEmpty()) {
-            int[] curr = queue.poll();
-            int cy = curr[0];
-            int cx = curr[1];
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(y, x, 0));
 
-            if (minDist < dist[cy][cx]) continue;
-
-            // 방문할 수 있는 모든 물고기를
-            if (map[cy][cx] != 0 && map[cy][cx] < sharkSize) {
-                minDist = dist[cy][cx];
-                fishList.add(new Fish(cy, cx, dist[cy][cx]));
-                continue;
-                // System.out.println(cy + ", " + cx);
+        while (!pq.isEmpty()) {
+            Node curr = pq.poll();
+            int cy = curr.y;
+            int cx = curr.x;
+            if (map[cy][cx] != 0 && map[cy][cx] < fishSize) {
+                return curr;
             }
 
             for (int d = 0; d < 4; d++) {
@@ -102,22 +85,15 @@ public class Main {
                 int nx = cx + dx[d];
 
                 if (ny < 0 || nx < 0 || ny >= n || nx >= n) continue;
-                // 방문한 적이 없거나, 물고기가 나보다 작거나 같아야 함
-                if (dist[ny][nx] == -1 && map[ny][nx] <= sharkSize) {
-                    dist[ny][nx] = dist[cy][cx] + 1;
-                    queue.offer(new int[] {ny, nx});
+                if (visited[ny][nx]) continue;
+
+                if (map[ny][nx] == 0 || map[ny][nx] <= fishSize) {
+                    visited[ny][nx] = true;
+                    pq.offer(new Node(ny, nx, curr.dist + 1));
                 }
             }
         }
 
-        if (fishList.isEmpty()) return null;
-
-        fishList.sort((a, b) -> {
-            if (a.dist != b.dist) return a.dist - b.dist;
-            if (a.y != b.y) return a.y - b.y;
-            return a.x - b.x;
-        });
-
-        return fishList.get(0);
+        return null;
     }
 }
