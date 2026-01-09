@@ -4,15 +4,15 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
+    static int n;
     static List<List<Integer>> graph;
-    static boolean[] visited;
-    static int[] parent;
+    static int[] indegree;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] parts = br.readLine().split(" ");
 
-        int n = Integer.parseInt(parts[0]);
+        n = Integer.parseInt(parts[0]);
         int m = Integer.parseInt(parts[1]);
 
         graph = new ArrayList<>();
@@ -20,38 +20,42 @@ public class Main {
             graph.add(new ArrayList<>());
         }
 
-        parent = new int[n + 1];
-        for (int i = 1; i <= n; i++) {
-            parent[i] = i;
-        }
+        indegree = new int[n + 1];
         for (int i = 0; i < m; i++) {
             parts = br.readLine().split(" ");
-            int u = Integer.parseInt(parts[1]);
-            int v = Integer.parseInt(parts[0]);
+            int u = Integer.parseInt(parts[0]);
+            int v = Integer.parseInt(parts[1]);
 
-            parent[v] = u;
+            indegree[v]++;
             graph.get(u).add(v);
         }
 
-
-        visited = new boolean[n + 1];
-        for (int i = 1; i <= n; i++) {
-            if (!visited[i] && parent[i] == i) {
-                // System.out.println("i: " + i);
-                dfs(i);
-            }
-        }
+        String result = topologicalSort();
+        System.out.println(result);
     }
 
-    private static void dfs(int curr) {
-        visited[curr] = true;
-
-        for (int next: graph.get(curr)) {
-            if (!visited[next]) {
-                dfs(next);
+    private static String topologicalSort() {
+        StringBuilder sb = new StringBuilder();
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
             }
         }
 
-        System.out.print(curr + " ");
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            sb.append(curr).append(" ");
+
+            for (int next: graph.get(curr)) {
+                indegree[next]--;
+
+                if (indegree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+
+        return sb.toString();
     }
 }
