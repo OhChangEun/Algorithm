@@ -1,95 +1,90 @@
 import java.util.*;
 
 class Solution {
-   	int n;
-    boolean[] visited; 
+    int n;
     int[] selected;
-    int maxWin = 0;
     int[] result;
+    int[][] dices;
+    int maxWin = 0;
     
     public int[] solution(int[][] dice) {
-   		n = dice.length;
+        n = dice.length; 
+        
+        dices = dice; 
+        selected = new int[n / 2];
         result = new int[n / 2];
-        selected = new int[n / 2]; 
-       	visited = new boolean[n];
-        dfs(dice, 0, 0);
+        dfs(0, 0);
         
         return result; 
     }
-   	
-    private int getWinCount(int[][] dice, int[] selected) {
+    
+    private int getWinResult(int[] selected) {
         boolean[] used = new boolean[n];
         for (int s: selected) used[s] = true; 
-        
+                
         int idx = 0;
-        int[] otherSelected = new int[selected.length];
+        int[] otherSelected = new int[n / 2];     
         for (int i = 0; i < n; i++) {
             if (!used[i]) {
-        		otherSelected[idx] = i;
-               	idx++; 
+                otherSelected[idx] = i;
+                idx++;
             }
         }
-        
-        List<Integer> sumA = getSumList(dice, selected);
-        List<Integer> sumB = getSumList(dice, otherSelected);
-        
+          
+        List<Integer> sumA = getSumList(selected); 
+        List<Integer> sumB = getSumList(otherSelected);
+     
         Collections.sort(sumA);
         Collections.sort(sumB);
         
-        // sumA와 sumB간 투 포인터를 활용해서 더 큰 A개수 구하는 로직 
-       	int win = 0; 
+        int count = 0; 
         int right = 0;
-       	for (int left = 0; left < sumA.size(); left++) {
-           	while (right < sumB.size() && sumB.get(right) < sumA.get(left)) {
-               	right++;
+        for (int left = 0; left < sumA.size(); left++) {
+            while (right < sumB.size() && sumA.get(left) > sumB.get(right)) {
+                right++;
             }
-            
-            win += right; 
-        }	 
-        
-        return win;
-    }
-    
-    private List<Integer> getSumList(int[][] dice, int[] selected) {
-        List<Integer> result = new ArrayList<>();
-        
-        sumDfs(dice, selected, 0, 0, result);
-        
-        return result;
-    }
-    
-    private void sumDfs(int[][] dice, int[] selected, int depth, int sum, List<Integer> result) {
-    	if (depth == selected.length) {
-      		result.add(sum); 
-            return;
+            count += right;    
         }
-      
-        int idx = selected[depth];
-        for (int d: dice[idx]) {
-        	sumDfs(dice, selected, depth + 1, sum + d, result);
-        }
+        
+        return count;
     }
     
-    private void dfs(int[][] dice, int depth, int curr) {
+    private List<Integer> getSumList(int[] selected) {
+        List<Integer> list = new ArrayList<>();
+        
+        sumDfs(selected, 0, 0, list);
+        
+        return list;
+    }
+    
+    private void sumDfs(int[] selected, int depth, int sum, List<Integer> list) {
         if (depth == n / 2) {
-            int win = getWinCount(dice, selected);
-            // a가 선택한 결과: selected
+            list.add(sum);
+            return; 
+        }
+    
+        int idx = selected[depth];
+        for (int d: dices[idx]) {
+            sumDfs(selected, depth + 1, sum + d, list); 
+        }
+    }
+    
+    private void dfs(int depth, int start) {
+        if (depth == n / 2) {
+            int win = getWinResult(selected); 
             if (maxWin < win) {
-               	maxWin = win;
-                for (int i = 0;  i < selected.length; i++) {
-                	result[i] = selected[i] + 1;
+                maxWin = win; 
+                for (int i = 0; i < n / 2; i++) {
+                    result[i] = selected[i] + 1;
                 }
             }
-            return;
+            
+            return; 
         }
         
-        for (int i = curr; i < n; i++) {
-           	if (!visited[i]) {
-               	visited[i] = true; 
-                selected[depth] = i;
-                dfs(dice, depth + 1, i + 1); 
-               	visited[i] = false; 
-            } 
+        for (int i = start; i < n; i++) {
+            selected[depth] = i;
+            dfs(depth + 1, i + 1);
         }
         
     }
