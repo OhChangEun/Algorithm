@@ -1,75 +1,88 @@
 import java.util.*;
 
 class Solution {
-   	class Node {
-        int x, y, num; 
-        Node left, right;
-        public Node (int x, int y, int num) {
-            this.x = x;
+    List<Integer> inorderList;
+    List<Integer> preorderList;
+    
+    class Node {
+        int idx; 
+        int y, x;
+        Node left, right; 
+        
+        public Node(int idx, int y, int x) {
+            this.idx = idx;
             this.y = y;
-            this.num = num;
+            this.x = x;
+            this.left = null;
+            this.right = null;
         }
     }
     
-    List<Integer> preorderList;
-    List<Integer> postorderList;
     public int[][] solution(int[][] nodeinfo) {
-      	int n = nodeinfo.length;
-        Node[] nodes = new Node[n];
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> {
+            if (a.y != b.y) return b.y - a.y;
+            else return a.x - b.x;
+        });
         
-        for (int i=0; i<n; i++) {
+        int n = nodeinfo.length;
+        for (int i = 0; i < n; i++) {
             int x = nodeinfo[i][0];
             int y = nodeinfo[i][1];
-            nodes[i] = new Node(x, y, i+1);
+            
+            pq.add(new Node(i + 1, y, x));
         }
         
-        Arrays.sort(nodes, (a, b) -> {
-          	if (a.y == b.y) return a.x - b.x; 
-            return b.y - a.y;
-        });
-       
-        Node root = nodes[0];
-        for (int i=1; i<n; i++) {
-            insertNode(root, nodes[i]);
+        Node root = pq.poll();
+        while (!pq.isEmpty()) {
+            Node node = pq.poll(); 
+            insertNode(root, node);
         }
-       
+        
+        inorderList = new ArrayList<>();
         preorderList = new ArrayList<>();
-        postorderList = new ArrayList<>();
-       	preorder(root);
-       	postorder(root);
        
-        int[][] answer = new int[2][n];
-        for (int i=0; i<n; i++) {
-            answer[0][i] = preorderList.get(i);
-            answer[1][i] = postorderList.get(i);
+        inorder(root);
+       	preorder(root); 
+       
+        int arrSize = inorderList.size();
+        int[][] answer = new int[2][arrSize];
+        for (int i = 0; i < arrSize; i++) {
+            answer[0][i] = inorderList.get(i);
+            answer[1][i] = preorderList.get(i);
         }
-        
         return answer;
     }
-   	private void preorder(Node node) {
-        if (node == null) return; 
-        preorderList.add(node.num);
-        preorder(node.left);
-        preorder(node.right);
-    } 
-   	private void postorder(Node node) {
-        if (node == null) return; 
-        postorder(node.left);
-        postorder(node.right);
-        postorderList.add(node.num);
-    } 
     
-    private void insertNode(Node parent, Node child) {
-        if (child.x < parent.x) {
-            if (parent.left == null) 
-                parent.left = child;
-            else 
-                insertNode(parent.left, child);
-        } else {
-            if (parent.right == null)
-                parent.right = child; 
-            else 
-                insertNode(parent.right, child);
+    private void inorder(Node curr) {
+        if (curr == null) return; 
+        
+        inorderList.add(curr.idx);
+        inorder(curr.left);
+        inorder(curr.right);
+    }
+    
+    private void preorder(Node curr) {
+        if (curr == null) return; 
+        
+        preorder(curr.left);
+        preorder(curr.right);
+        preorderList.add(curr.idx);
+    }
+    
+    private void insertNode(Node root, Node node) {
+        // x 좌표가 작으면 노드의 왼쪽에 
+        if (node.x < root.x) {
+            if (root.left == null) {
+                root.left = node;
+            } else {
+                insertNode(root.left, node);
+            }
+        } else { // x 좌표가 크면 노드의 오른쪽에 
+            if (root.right == null) {
+                root.right = node; 
+            } else {
+                insertNode(root.right, node);
+            }
         }
     }
 }
