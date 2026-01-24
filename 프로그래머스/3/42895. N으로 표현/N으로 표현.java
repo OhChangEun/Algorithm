@@ -1,17 +1,14 @@
 import java.util.*;
 
 class Solution {
-    public int solution(int N, int number) {
-        int answer = 0;
-       
+    public int solution(int N, int target) {
         Set<Integer>[] dp = new HashSet[9];
-      	for (int i = 0; i <= 8; i++) {
+        for (int i = 1; i < 9; i++) {
             dp[i] = new HashSet<>();
-        } 
+        }
         
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i < 9; i++) {
             int repeatedNum = Integer.parseInt(String.valueOf(N).repeat(i));
-            //System.out.println(repeatedNum);
             dp[i].add(repeatedNum);
             
             for (int j = 1; j < i; j++) {
@@ -26,11 +23,10 @@ class Solution {
                 }
             }
             
-            if (dp[i].contains(number)) {
+            if (dp[i].contains(target)) 
                 return i;
-            }
         }
-        
+       
         return -1;
     }
 }
