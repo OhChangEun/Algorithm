@@ -1,32 +1,40 @@
 import java.util.*;
 
 class Solution {
-    Map<String, PriorityQueue<String>> airportMap;
-   	List<String> result;	
+    final String startAirport = "ICN";
     
+    int n; 
+    Map<String, PriorityQueue<String>> graph;
+    List<String> pathList;
     public String[] solution(String[][] tickets) {
-    	airportMap = new HashMap<>();
-        result = new ArrayList<>();
+        this.n = tickets.length; 
+        pathList = new ArrayList<>();
         
+        graph = new HashMap<>();
         for (String[] ticket: tickets) {
-            String from = ticket[0];
-            String to = ticket[1];
+            String start = ticket[0];
+            String end = ticket[1]; 
             
-            airportMap.putIfAbsent(from, new PriorityQueue<>());
-            airportMap.get(from).add(to);
+            graph.putIfAbsent(start, new PriorityQueue<>());
+            graph.get(start).add(end);
         }
-        // System.out.println(airportMap);
-       
-        String start = "ICN";
-        dfs(start); 
         
-        return result.toArray(new String[0]);
+        // System.out.println(graph);
+        
+        dfs(startAirport);
+        
+        Collections.reverse(pathList);
+        
+        return pathList.toArray(new String[0]);
     }
-    public void dfs(String airport) {
-       	while (airportMap.containsKey(airport) && !airportMap.get(airport).isEmpty()) {
-            String next = airportMap.get(airport).poll();
+    
+    private void dfs(String curr) {
+        PriorityQueue<String> pq = graph.get(curr);
+        while (pq != null && !pq.isEmpty()) {
+            String next = pq.poll();
             dfs(next);
-        } 
-        result.add(0, airport);
+        }
+        
+        pathList.add(curr);
     }
 }
