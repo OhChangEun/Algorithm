@@ -1,47 +1,54 @@
 import java.util.*;
 
 class Solution {
+    int n;
+    List<List<Integer>> graph;
+    
     public int[] solution(int n, int[][] roads, int[] sources, int destination) {
-        List<List<Integer>> graph = new ArrayList<>();
-        for (int i=0; i<=n; i++) {
+        this.n = n; 
+        
+       	graph = new ArrayList<>();
+        for (int i = 0; i <= n; i++) {
             graph.add(new ArrayList<>());
         }
-        // System.out.println(graph);
+        
         for (int[] road: roads) {
-            int u = road[0];
-            int v = road[1];
-            graph.get(u).add(v);    
-            graph.get(v).add(u);    
+            int from = road[0];
+            int to = road[1];
+            
+            graph.get(from).add(to);
+            graph.get(to).add(from);
         }
-       
-        // 도착점 기준으로 시작점
-        int[] dist = bfs(n, graph, sources, destination); 
-        int[] result = new int[sources.length];
-        for (int i=0; i<sources.length; i++) {
-            result[i] = dist[sources[i]];
+        
+        int[] dists = bfs(destination); // 역방향으로 거리 추적 
+        
+        int len = sources.length;
+        int[] result = new int[len];
+        for (int i = 0; i < len; i++) {
+           	result[i] = dists[sources[i]]; 
         }
         return result;
     }
-    public int[] bfs(int n, List<List<Integer>> graph, int[] sources, int start) {
-        int target = sources[0];  
+    
+    private int[] bfs(int start) {
         int[] dist = new int[n + 1]; 
         Arrays.fill(dist, -1);
+        dist[start] = 0;
         
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
-        dist[start] = 0; 
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+       	queue.offer(start); 
         
         while (!queue.isEmpty()) {
             int curr = queue.poll();
             
             for (int next: graph.get(curr)) {
                 if (dist[next] == -1) {
-                    dist[next] = dist[curr] + 1;
+                    dist[next] = dist[curr] + 1; 
                     queue.offer(next);
                 }
             }
         }
         
-        return dist;
+        return dist; 
     }
 }
