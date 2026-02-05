@@ -2,23 +2,28 @@ import java.util.*;
 
 class Solution {
     public long solution(int n, int[] works) {
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
         for (int work: works) {
-            maxHeap.add(work);
+            pq.offer(work);
         }
         
-       	for (int i=0; i<n; i++) {
-            int max = maxHeap.poll();
-            if (max > 1) {
-               	maxHeap.add(max - 1);
-            }
-            if (maxHeap.isEmpty()) return 0;
-        } 
+        while (n-- > 0) {
+            if (pq.isEmpty()) return 0; 
+
+            int max = pq.poll();
+            max--; 
+            
+            if (max != 0) 
+                pq.offer(max);
+        }
+        
         long result = 0;
-   		while (!maxHeap.isEmpty()) {
-       		int num = maxHeap.poll();
+        while (!pq.isEmpty()) {
+            int num = pq.poll();
             result += num * num;
         } 
+        
         return result;
     }
 }
