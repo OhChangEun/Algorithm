@@ -1,53 +1,54 @@
 import java.util.*;
 
 class Solution {
-    class Song {
-        int index;
-        int value;
-        public Song(int index, int value) {
-            this.index = index;
-            this.value = value;
+    class Song implements Comparable<Song> {
+        int index; 
+        int freq; 
+        
+        public Song (int index, int freq) {
+            this.index = index; 
+            this.freq = freq; 
+        }
+        
+        @Override
+        public int compareTo(Song other) {
+            return other.freq - this.freq;
         }
     }
     public int[] solution(String[] genres, int[] plays) {
-        Map<String, Integer> sums = new HashMap<>();
-        Map<String, List<Song>> songList = new HashMap<>();
-        
-        for (int i=0; i<genres.length; i++) {
-            sums.put(genres[i], sums.getOrDefault(genres[i], 0) + plays[i]);
+        Map<String, Integer> genreFreqMap = new HashMap<>();
+        Map<String, PriorityQueue<Song>> playFreqMap = new HashMap<>();
+        for (int i = 0; i < genres.length; i++) {
+            String genre = genres[i]; 
+            int playCnt = plays[i]; 
             
-            if (!songList.containsKey(genres[i])) {
-                songList.put(genres[i], new ArrayList<>());
-            }
-            
-            songList.get(genres[i]).add(new Song(i, plays[i]));
-        }
-        // System.out.println(sums); 
-        // System.out.println(songList); 
-       
-        List<String> genreOrder = new ArrayList<>(sums.keySet());
-        genreOrder.sort((a, b) -> sums.get(b) - sums.get(a));
-        // System.out.println(genreOrder); 
-      
-        List<Integer> result = new ArrayList<>();
-        for (String genre: genreOrder) {
-            List<Song> songs = songList.get(genre);
-            songs.sort((a, b) -> {
-                if (a.value == b.value) return a.index - b.index; 
-                return b.value - a.value;
-            });
-            
-            for (int i=0; i<Math.min(2, songs.size()); i++) {
-                result.add(songs.get(i).index); 
-            }
-        }
-      
-        int n = result.size();
-        int[] res = new int[n];
-        for (int i=0; i<n; i++) {
-            res[i] = result.get(i);
+            genreFreqMap.put(genre, genreFreqMap.getOrDefault(genre, 0) + playCnt);
+            playFreqMap.putIfAbsent(genre, new PriorityQueue<>());
+            playFreqMap.get(genre).add(new Song(i, playCnt));
         }
         
-        return res;
+        List<String> orders = new ArrayList<>(genreFreqMap.keySet());
+        Collections.sort(orders, (a, b) -> genreFreqMap.get(b) - genreFreqMap.get(a));
+
+        List<Integer> resultList = new ArrayList<>();
+        
+        // 순서에 맞게 모든 노래에 대해 
+        for (String genre: orders) {
+            PriorityQueue<Song> pq = playFreqMap.get(genre);
+            Song play1 = pq.poll();
+            resultList.add(play1.index);
+            
+            if (!pq.isEmpty()) {
+           		Song play2 = pq.poll();
+            	resultList.add(play2.index);
+            }
+        }        
+        
+        int n = resultList.size(); 
+        int[] answer = new int[n];
+        for (int i = 0; i < n; i++) {
+            answer[i] = resultList.get(i);
+        }
+        return answer;
     }
 }
