@@ -1,43 +1,37 @@
 class Solution {
     public int solution(int[] stones, int k) {
+       
+        int result = 0;
         
         int left = 0;
-        int right = 200_000_000; 
-        
-        int answer = 0;
+       	int right = 200_000_000; 
         while (left <= right) {
-            int mid = (left + right) / 2;
+       		int mid = (left + right) / 2; 
             
-            if (canGo(stones.clone(), mid, k)) {
+            if (canCross(stones, mid, k)) {
+                result = mid; 
                 left = mid + 1;
-                answer = mid; 
             } else {
-                right = mid - 1;
+                right = mid - 1; 
             }
         }
         
-        return answer + 1;
+        return result;
     }
     
-    // 배열에 num을 다 빼고,
-    // 연속된 0이 k보다 작으면 넘어갈 수 있음 
-    private boolean canGo(int[] arr, int num, int k) {
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = Math.max(arr[i] - num, 0); 
-        }
-        
-        int left = 0; 
-        int maxLen = 0;
-        for (int right = 0; right < arr.length; right++) {
-            if (arr[right] == 0) {
-                int len = right - left + 1;
-                maxLen = Math.max(maxLen, len);
+    private boolean canCross(int[] stones, int mid, int k) {
+        // mid 명이 연속으로 k개의 수가 0 미만 되면 stones를 건널 수 없다 
+        int cnt = 0; 
+        for (int stone: stones) {
+            if (stone - mid < 0) {
+                cnt++;
+                
+                if (cnt == k) return false; 
             } else {
-                left = right + 1;
+                cnt = 0; // 연속되지 않으므로 초기화
             }
         }
         
-        if (maxLen < k) return true;
-        return false;
+ 		return true; 
     }
 }
