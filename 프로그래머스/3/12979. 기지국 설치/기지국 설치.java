@@ -1,24 +1,26 @@
 class Solution {
     public int solution(int n, int[] stations, int w) {
-        int answer = 0; 
-        int start = 1;
-        int range = 2 * w + 1;
+        int cnt = 0; 
+        int coverRange = 2 * w + 1; 
         
+        int left = 0; 
         for (int station: stations) {
-            int left = station - w;
-           
-            int gap = left - start;
-            if (gap > 0) {
-            	answer += (gap + range - 1) / range;
-            }
-            start = station + w + 1;
+            station--; // 0-based
+            int right = station - w - 1; 
+            
+            // System.out.println(left + " " + right);
+            int need = (right - left + 1 + coverRange - 1) / coverRange; // 기지국 설치 올림 계산 
+            cnt += need; 
+            left = station + w + 1; 
+            // System.out.println(left + " " + right);
+        }
+        
+        // 남은 범위 기지국 설치
+        if (left < n) {
+            int need = (n - 1 - left + 1 + coverRange - 1) / coverRange; 
+            cnt += need; 
         }
 
-        if (start <= n) {
-           	int gap = n - start + 1;
-            answer += (gap + range - 1) / range;
-        }
-
-        return answer;
+        return cnt;
     }
 }
