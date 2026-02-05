@@ -1,37 +1,46 @@
 import java.util.*;
 
 class Solution {
-  	Set<Set<String>> result = new HashSet<>(); 
+    int result = 0; 
+    Set<Set<String>> visitedSet; 
+    Set<String> visited; 
     
-    public int solution(String[] user_id, String[] banned_id) {
-   		backtrack(user_id, banned_id, 0, new HashSet<>());
-        return result.size();
+    public int solution(String[] user_id, String[] banned_id) {        
+        visited = new HashSet<>();
+        visitedSet = new HashSet<>();
+        dfs(user_id, banned_id, 0);
+        
+        // System.out.println(visitedSet);
+        return visitedSet.size();
     }
     
-    public void backtrack(String[] user_id, String[] banned_id, int depth, Set<String> banned) {
+    private void dfs(String[] user_id, String[] banned_id, int depth) {
         if (depth == banned_id.length) {
-           	result.add(new HashSet<>(banned)); 
-            return;
+            visitedSet.add(new HashSet<>(visited));
+            return; 
         }
         
         for (String user: user_id) {
-            if (banned.contains(user)) continue;
-            
-            if (canBan(user, banned_id[depth])) {
-                banned.add(user);
-                backtrack(user_id, banned_id, depth + 1, banned);
-                banned.remove(user);
-            }
-        }
+            if (!visited.contains(user)) {
+                if (canBan(user, banned_id[depth])) {
+                    visited.add(user);
+                    dfs(user_id, banned_id, depth + 1);
+                    visited.remove(user);
+                }
+            } 
+        } 
     }
     
-    public boolean canBan(String str, String ban) {
+    private boolean canBan(String str, String ban) {
         if (str.length() != ban.length()) return false; 
-        for (int i=0; i<str.length(); i++) {
-            if (ban.charAt(i) != '*' && str.charAt(i) != ban.charAt(i)) {
-                return false;
+        
+        for (int i = 0; i < ban.length(); i++) {
+            char ch = ban.charAt(i);
+            if (ch != '*' && str.charAt(i) != ban.charAt(i)) {
+                return false; 
             }
         }
+        
         return true;
     }
 }
