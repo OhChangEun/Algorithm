@@ -2,25 +2,23 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] A, int[] B) {
-       	PriorityQueue<Integer> pq = new PriorityQueue<>();
-      
-        for (int b: B) {
-            pq.add(b);
-        }
-        
-        int count = 0;
+        int n = A.length; 
         Arrays.sort(A);
         Arrays.sort(B);
-        for (int i=0; i<A.length; i++) {
-       		while (!pq.isEmpty()) {
-                int minB = pq.poll();
-                if (A[i] < minB) {
-                    count++;
-                    break;
-                }
-            }     
+        
+        int winCnt = 0;
+        int right = 0; 
+        for (int left = 0; left < n; left++) {
+            while (right < n && A[left] >= B[right]) {
+                right++;
+            } 
+            
+            if (right < n && A[left] < B[right]) {
+                winCnt++;
+                right++;
+            }
         }
         
-        return count;
+        return winCnt;
     }
 }
