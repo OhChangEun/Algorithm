@@ -1,88 +1,99 @@
 import java.util.*;
 
 class Solution {
-    List<Integer> inorderList;
     List<Integer> preorderList;
+    List<Integer> postorderList;
     
-    class Node {
-        int idx; 
-        int y, x;
+    class Node implements Comparable<Node>{
+        int index;
+        int y;
+        int x; 
         Node left, right; 
         
-        public Node(int idx, int y, int x) {
-            this.idx = idx;
+        public Node(int index, int y, int x) {
+            this.index = index;
             this.y = y;
             this.x = x;
             this.left = null;
             this.right = null;
         }
-    }
-    
-    public int[][] solution(int[][] nodeinfo) {
-        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> {
-            if (a.y != b.y) return b.y - a.y;
-            else return a.x - b.x;
-        });
         
-        int n = nodeinfo.length;
-        for (int i = 0; i < n; i++) {
-            int x = nodeinfo[i][0];
-            int y = nodeinfo[i][1];
-            
-            pq.add(new Node(i + 1, y, x));
+        @Override
+        public int compareTo(Node other) {
+            return other.y - this.y;
         }
+    }
+    public int[][] solution(int[][] nodeinfo) {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
         
+        int n = nodeinfo.length; 
+        for (int i = 0 ; i < n; i++) {
+            int y = nodeinfo[i][1];
+            int x = nodeinfo[i][0]; 
+            
+            pq.offer(new Node(i + 1, y, x));
+        }
+       
         Node root = pq.poll();
         while (!pq.isEmpty()) {
-            Node node = pq.poll(); 
+            Node node = pq.poll();
             insertNode(root, node);
         }
         
-        inorderList = new ArrayList<>();
         preorderList = new ArrayList<>();
+        postorderList = new ArrayList<>();
        
-        inorder(root);
-       	preorder(root); 
+        preorder(root);
+        postorder(root);
        
-        int arrSize = inorderList.size();
-        int[][] answer = new int[2][arrSize];
-        for (int i = 0; i < arrSize; i++) {
-            answer[0][i] = inorderList.get(i);
-            answer[1][i] = preorderList.get(i);
+        int[][] answer = new int[2][n];
+        for (int i = 0; i < n; i++) {
+            answer[0][i] = preorderList.get(i);
+            answer[1][i] = postorderList.get(i);
         }
         return answer;
     }
     
-    private void inorder(Node curr) {
-        if (curr == null) return; 
+    private void preorder(Node node) {
+        if (node == null) 
+            return; 
         
-        inorderList.add(curr.idx);
-        inorder(curr.left);
-        inorder(curr.right);
+        preorderList.add(node.index);
+        preorder(node.left);
+        preorder(node.right);
     }
     
-    private void preorder(Node curr) {
-        if (curr == null) return; 
+    private void postorder(Node node) {
+        if (node == null) 
+            return; 
         
-        preorder(curr.left);
-        preorder(curr.right);
-        preorderList.add(curr.idx);
+        postorder(node.left);
+        postorder(node.right);
+        postorderList.add(node.index);
     }
     
-    private void insertNode(Node root, Node node) {
-        // x 좌표가 작으면 노드의 왼쪽에 
-        if (node.x < root.x) {
-            if (root.left == null) {
-                root.left = node;
+    private void insertNode(Node parent, Node child) {
+        if (parent.x > child.x) {
+            if (parent.left == null) {
+                parent.left = child; 
             } else {
-                insertNode(root.left, node);
+                insertNode(parent.left, child);
             }
-        } else { // x 좌표가 크면 노드의 오른쪽에 
-            if (root.right == null) {
-                root.right = node; 
-            } else {
-                insertNode(root.right, node);
+        } else {
+           if (parent.right == null) {
+               parent.right = child; 
+           } else {
+               insertNode(parent.right, child);
+           }
+        }
+    }
+    
+    private void print(int[][] arr) {
+        for (int[] row: arr) {
+            for (int num: row) {
+                System.out.print(num + " ");
             }
+            System.out.println();
         }
     }
 }
