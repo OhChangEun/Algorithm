@@ -1,54 +1,54 @@
 import java.util.*;
 
 class Solution {
-    int maxSheep = 0;
     List<List<Integer>> graph; 
     int[] info;
+    int maxSheepCnt = 0;
     
     public int solution(int[] info, int[][] edges) {
-       	this.info = info;
-   		int n = info.length; 
+        this.info = info; 
         
+        int n = info.length; 
         graph = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-           	graph.add(new ArrayList<>());
+            graph.add(new ArrayList<>());
         }
         
         for (int[] edge: edges) {
             int u = edge[0];
-            int v = edge[1]; 
+            int v = edge[1];
             
             graph.get(u).add(v);
         }
-      
-        int start = 0; 
-        int sheep = 0, wolf = 0;
+        
+        int start = 0; // 시작: 0번 노드 
         List<Integer> candidates = new ArrayList<>();
         candidates.add(start);
         
+        int sheep = 0, wolf = 0;
         dfs(start, sheep, wolf, candidates);
         
-        return maxSheep;
+        return maxSheepCnt;
     }
     
     private void dfs(int curr, int sheep, int wolf, List<Integer> candidates) {
-        if (info[curr] == 0) sheep++; // 양일 때
-        else wolf++; // 늑대일 때
+        if (info[curr] == 0) sheep++;
+        else wolf++;
         
-        if (sheep <= wolf) // 종료 조건 
+        if (sheep <= wolf) 
             return; 
-            
-        maxSheep = Math.max(maxSheep, sheep); // 최대 양 개수 갱신 
-   
-      	List<Integer> newCandidates = new ArrayList<>(candidates);	
-       	newCandidates.remove(Integer.valueOf(curr));
+        
+        maxSheepCnt = Math.max(maxSheepCnt, sheep);
+        
+        List<Integer> newCandidates = new ArrayList<>(candidates);
+        newCandidates.remove(Integer.valueOf(curr));
         
         for (int next: graph.get(curr)) {
-       		newCandidates.add(next);     
+            newCandidates.add(next);
         }
         
         for (int child: newCandidates) {
-            dfs(child, sheep, wolf, newCandidates);
+            dfs(child, sheep, wolf, newCandidates);        
         }
     }
 }
