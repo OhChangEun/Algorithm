@@ -1,33 +1,31 @@
+import java.util.*;
+
 class Solution {
     public int solution(int[] a) {
-        int n = a.length; 
-        int[] prefixMin = new int[n];
-        int[] postfixMin = new int[n];
+        int n = a.length;
         
-        prefixMin[0] = Integer.MAX_VALUE;
+        int cnt = 0; 
+
+        int[] leftMin = new int[n];
+        leftMin[0] = a[0]; 
+        
+        int[] rightMin = new int[n];
+        rightMin[n - 1] = a[n - 1];
+        
         for (int i = 1; i < n; i++) {
-            prefixMin[i] = Math.min(prefixMin[i - 1], a[i - 1]); 
+            leftMin[i] = Math.min(leftMin[i - 1], a[i]);
         }
         
-        postfixMin[n - 1] = Integer.MAX_VALUE;
         for (int i = n - 2; i >= 0; i--) {
-            postfixMin[i] = Math.min(postfixMin[i + 1], a[i + 1]); 
+            rightMin[i] = Math.min(rightMin[i + 1], a[i]);
         }
         
-        int result = 0; 
         for (int i = 0; i < n; i++) {
-            if (a[i] > prefixMin[i] && a[i] > postfixMin[i]) continue;
-            result++;
+            if (leftMin[i] < a[i] && rightMin[i] < a[i]) continue; 
+            
+            cnt++;
         }
-        /*
-        for (int num: prefixMin) {
-            System.out.print(num + " "); 
-        }
-        System.out.println(); 
-        for (int num: postfixMin) {
-            System.out.print(num + " "); 
-        }
-        */ 
-        return result;
+        
+        return cnt;
     }
 }
