@@ -69,16 +69,12 @@ public class Main {
                     int dir = sharks[idx].dir;
                     int size = sharks[idx].size;
 
-                    // 새로운 위치로 이동
-                    // speed만큼 움직일건데
-                    // dir == 2, 3일 때, 좌우 일 때
-                    // x 방향으로 나가지 않게끔 nx가 0이거나 r + 1이면 이전 걸로 위치
-                    // 움직인 장소 값을 하나를 갱신하면 아직 갱신되지 않은 애들을 어떻게 할지 생각
-
                     if (dir == RIGHT || dir == LEFT) {
                         int nx = col;
                         int dx = (dir == RIGHT) ? 1 : -1;
 
+                        int cycle = (C - 1) * 2;
+                        speed %= cycle;
                         for (int i = 0; i < speed; i++) {
                             nx += dx;
 
@@ -97,6 +93,8 @@ public class Main {
                         int ny = row;
                         int dy = (dir == UP) ? -1 : 1;
 
+                        int cycle = (R - 1) * 2;
+                        speed %= cycle;
                         for (int i = 0; i < speed; i++) {
                             ny += dy;
 
