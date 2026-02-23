@@ -3,8 +3,6 @@ import java.util.*;
 
 public class Main {
     static int n;
-    static int[][] map;
-    static int[] selected;
     static int maxValue = 0;
 
     public static void main(String[] args) throws IOException{
@@ -12,7 +10,7 @@ public class Main {
 
         n = Integer.parseInt(br.readLine());
 
-        map = new int[n][n];
+        int[][] map = new int[n][n];
         for (int i = 0; i < n; i++) {
             String[] parts = br.readLine().split(" ");
             for (int j = 0; j < n; j++) {
@@ -20,12 +18,8 @@ public class Main {
             }
         }
 
-        // print();
+        dfs(0, map);
 
-        selected = new int[5];
-        dfs(0);
-
-        // print();
         System.out.println(maxValue);
     }
 
@@ -36,6 +30,7 @@ public class Main {
                 int ny = i;
 
                 int value = map[i][j];
+                if (value == 0) continue;
                 while (true) {
                     int ty = ny - 1;
 
@@ -63,6 +58,7 @@ public class Main {
                 int ny = i;
 
                 int value = map[i][j];
+                if (value == 0) continue;
                 while (true) {
                     int ty = ny + 1;
 
@@ -90,6 +86,7 @@ public class Main {
                 int nx = j;
 
                 int value = map[i][j];
+                if (value == 0) continue;
                 while (true) {
                     int tx = nx - 1;
 
@@ -117,6 +114,7 @@ public class Main {
                 int nx = j;
 
                 int value = map[i][j];
+                if (value == 0) continue;
                 while (true) {
                     int tx = nx + 1;
 
@@ -137,36 +135,38 @@ public class Main {
         }
     }
 
-    private static void move(int[][] map, int[] selected) {
-        for (int op: selected) {
-            if (op == 0) {
-                moveUp(map);
-            } else if (op == 1) {
-                moveDown(map);
-            } else if (op == 2) {
-                moveLeft(map);
-            } else if (op == 3) {
-                moveRight(map);
-            }
+    private static void move(int[][] map, int op) {
+        if (op == 0) {
+            moveUp(map);
+        } else if (op == 1) {
+            moveDown(map);
+        } else if (op == 2) {
+            moveLeft(map);
+        } else if (op == 3) {
+            moveRight(map);
         }
-
-        getMax(map);
     }
 
-    private static void dfs(int depth) {
+    private static void dfs(int depth, int[][] map) {
         if (depth == 5) {
-            int[][] copy = new int[n][n];
-            for (int i = 0; i < n; i++) {
-                copy[i] = map[i].clone();
-            }
-            move(copy, selected);
+            getMax(map);
             return;
         }
 
-        for (int i = 0; i < 5; i++) {
-            selected[depth] = i;
-            dfs(depth + 1);
+        for (int i = 0; i < 4; i++) {
+            int[][] copy = copyMap(map);
+            move(copy, i);
+            dfs(depth + 1, copy);
         }
+    }
+
+    private static int[][] copyMap(int[][] map) {
+        int[][] copy = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            copy[i] = map[i].clone();
+        }
+
+        return copy;
     }
 
     private static void getMax(int[][] map) {
