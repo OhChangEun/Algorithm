@@ -2,18 +2,22 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] numbers) {
-        int size = numbers.length;
-        int[] answer = new int[size];
+        int n = numbers.length; 
+        
+        int[] answer = new int[n]; 
         Arrays.fill(answer, -1);
         
-        Stack<Integer> stack = new Stack<>();
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
         
-        for (int i=0; i<size; i++) {
-          	while (!stack.isEmpty() && numbers[stack.peek()] < numbers[i]) {
-               	int prev = stack.pop(); 
-                answer[prev] = numbers[i];
+        for (int i = 0; i < n; i++) {
+            int curr = numbers[i];
+            
+            while (!stack.isEmpty() && curr > numbers[stack.peek()]) {
+                int idx = stack.pop();
+                answer[idx] = curr; 
             }
-            stack.push(i);
+            
+            stack.push(i); 
         }
         
         return answer;
