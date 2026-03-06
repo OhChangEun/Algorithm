@@ -10,74 +10,63 @@ class Solution {
         {'*', '-', '+'},
     };
     
-    public long solution(String expression) { 
+    public long solution(String expression) {        
         List<String> originTokens = getTokens(expression);
-        long maxReward = 0; 
-        for (char[] prior: priorities) { // 모든 연산자 경우의 수에 대해 
+        
+        long maxValue = 0;
+        for (char[] priority: priorities) {
             List<String> tokens = new ArrayList<>(originTokens);
             
-            for (char op: prior) { // 각 우선순위에 따른 연산자
-                for (int i = 0; i < tokens.size(); i++) {
-                    if (tokens.get(i).equals(String.valueOf(op))) { // 해당 연산자를 만난 경우 
-                        long left = Long.parseLong(tokens.get(i - 1)); // 피연산자 1
-                        long right = Long.parseLong(tokens.get(i + 1)); // 피연산자 2
-                         
-                        long result = calc(op, left, right); // 연산 결과 
-                        tokens.remove(i + 1); // 기존 토큰 삭제 
-                        tokens.remove(i); 
-                        tokens.remove(i - 1);
+            for (char op: priority) {
+                for (int i = 1; i < tokens.size(); i++) {
+                    if (tokens.get(i).equals(String.valueOf(op))) {
+                        long a = Long.parseLong(tokens.get(i - 1));
+                        long b = Long.parseLong(tokens.get(i + 1));
                         
+                        long result = calc(op, a, b);
+                        
+                        tokens.remove(i + 1);
+                        tokens.remove(i);
+                        tokens.remove(i - 1);
                         tokens.add(i - 1, String.valueOf(result));
                         i--;
                     }
                 }
             }
             
-            maxReward = Math.max(maxReward, Math.abs(Long.parseLong(tokens.get(0)))); // 남은 숫자로 최대값 갱신 
-
+            maxValue = Math.max(maxValue, Math.abs(Long.parseLong(tokens.get(0))));
         }
         
-        return maxReward;
+        return maxValue;
     }
     
-    private void print(List<String > tokens) {
-        for (String token: tokens) {
-            System.out.print(token + " ");
+    private Long calc(char op, long a, long b) {
+        switch (op) {
+            case '+':
+                return a + b; 
+            case '-':
+                return a - b; 
+            case '*':
+                return a * b; 
         }
-        System.out.println();
-    }
-    
-    private long calc(char ch, long op1, long op2) {
-        long result = 0; 
-        switch (ch) {
-            case '+': 
-                result = op1 + op2;
-                break;
-            case '-': 
-                result = op1 - op2;
-                break;
-            case '*': 
-                result = op1 * op2;
-                break;
-        }
-        return result;
+        
+        return 0L;
     }
     
     private List<String> getTokens(String str) {
         List<String> tokens = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
         
+        StringBuilder sb = new StringBuilder();
         for (char ch: str.toCharArray()) {
-            if (Character.isDigit(ch)) { // 숫자면 연산자 나오기 전까지 값 추가 
-                sb.append(ch);
+            if (Character.isDigit(ch)) {
+                sb.append(ch - '0');
             } else {
                 tokens.add(sb.toString());
                 sb = new StringBuilder();
-                tokens.add(String.valueOf(ch)); 
+                tokens.add(String.valueOf(ch));
             }
         }
-        
-        tokens.add(sb.toString()); // 마지막은 연산자가 없으므로 
+        tokens.add(sb.toString());
         
         return tokens;
     }
