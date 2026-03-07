@@ -2,36 +2,33 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-        int[] answer = {};
+        
+        int n = progresses.length; 
        
-        int size = progresses.length;
-        int[] works = new int[size];
-        for (int i=0; i<size; i++) {
-            works[i] = (100 - progresses[i] + speeds[i] - 1) / speeds[i];
+        int[] workTime = new int[n];
+        for (int i = 0; i < n; i++) {
+           	workTime[i] = ((100 - progresses[i]) + speeds[i] - 1) / speeds[i];
         }
-        
-        List<Integer> counts = new ArrayList<>();
-        int max = 0;
-        int count = 0;
-        for (int work: works) {
-           	if (max < work) {
-                // 기존 count 기록
-                if (count > 0) { 
-                	counts.add(count);
-                }
-                max = work;
-                count = 1;
-            } else {
-           		count++; 
+      
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+       
+        List<Integer> list = new ArrayList<>();
+        for (int time: workTime) {
+            if (!queue.isEmpty()) {
+                if (queue.peek() < time) {
+                    list.add(queue.size());
+                    queue.clear();
+                } 
             }
+           	queue.offer(time); 
         }
-        counts.add(count);
+        list.add(queue.size());
+       
+        int[] result = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
         
-        answer = new int[counts.size()];
-        for (int i=0; i<counts.size(); i++) {
-           	answer[i] = counts.get(i); 
-        }
-        // System.out.print(Arrays.toString(works));
-        return answer;
+        return result;
     }
 }
