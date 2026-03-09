@@ -12,71 +12,39 @@ class Solution {
     }
     
     public String[] solution(String[][] plans) {
-    
         Arrays.sort(plans, (a, b) -> a[1].compareTo(b[1]));
-      
+
         ArrayDeque<Task> stack = new ArrayDeque<>();
-        
-        int idx = 0; 
-        int n = plans.length;
-        int currTime = 0;
         List<String> result = new ArrayList<>();
-        
-        while (idx < n) {
-            String taskName = plans[idx][0]; 
-            int startTime = toMinute(plans[idx][1]); 
-            int duration = Integer.parseInt(plans[idx][2]);
-           
-            if (stack.isEmpty()) {
-                currTime = startTime;
-                stack.push(new Task(taskName, duration)); 
-                idx++;
-                continue;
-            } 
-            
-            Task prev = stack.pop();
-            if (currTime + prev.duration <= startTime) {
-                result.add(prev.name);
-                currTime += prev.duration; 
-                
-                while (!stack.isEmpty()) {
-                    Task next = stack.peek();
-                    if (currTime + next.duration <= startTime) {
-                        result.add(stack.pop().name);
-                        currTime += next.duration;
-                    } else {
-                        int remain = startTime - currTime; 
-                        if (remain > 0) {
-                            next.duration -= remain; 
-                            currTime += remain;
-                        }
-                        
-                        break;
-                    }
+        int prevTime = 0;
+
+        for (String[] plan : plans) {
+            int startTime = toMinute(plan[1]);
+            int duration = Integer.parseInt(plan[2]);
+            int gap = startTime - prevTime;
+
+            // gap 시간만큼 스택 소진
+            while (!stack.isEmpty() && gap > 0) {
+                Task top = stack.peek();
+                if (top.duration <= gap) {
+                    gap -= top.duration;
+                    result.add(stack.pop().name);
+                } else {
+                    top.duration -= gap;
+                    gap = 0;
                 }
-                
-                currTime = startTime; 
-                stack.push(new Task(taskName, duration)); 
-            } else {
-                int remaining = prev.duration - (startTime - currTime);
-                stack.push(new Task(prev.name, remaining)); 
-                currTime = startTime;
-                stack.push(new Task(taskName, duration)); 
             }
-           
-            idx++;
+
+            stack.push(new Task(plan[0], duration));
+            prevTime = startTime;
         }
-        
+
+        // 남은 task 처리
         while (!stack.isEmpty()) {
-            Task left = stack.pop();
-            result.add(left.name);
+            result.add(stack.pop().name);
         }
-          
-        String[] answer = new String[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            answer[i] = result.get(i);
-        }
-        return answer;
+
+        return result.toArray(new String[0]);
     }
     
     public int toMinute(String time) {
