@@ -2,36 +2,40 @@ import java.util.*;
 
 class Solution {
     public int solution(int cacheSize, String[] cities) {
-       	if (cacheSize == 0) {
-            return 5 * cities.length;
-        } 
+    	if (cacheSize == 0) {
+            return cities.length * 5;
+        }	
         
-        int answer = 0;
-     
-        List<String> cache = new ArrayList<>();
+      	List<String> list = new ArrayList<>(); 
         
+        int runTime = 0;
         for (String city: cities) {
-           	String cLow = city.toLowerCase(); 
+            city = city.toLowerCase();
             
-            // cashe.size()는 항상 casheSize보다 작거나 같아야 해 
-            if (!cache.contains(cLow)) {
-                if (cache.size() == cacheSize) {
-                   	cache.remove(0); 
-                }
-                cache.add(cLow);
-                answer += 5;
+            if (isCacheHit(list, city)) {
+                list.remove(city);
+                list.add(city);
+                runTime += 1; 
             } else {
-                int index = cache.indexOf(cLow);
-                if (index != -1) {
-                    cache.remove(index);
-                    // cache.remove(cLow);
-                    cache.add(cLow);
-                    answer += 1;
-                } 
+                if (list.size() == cacheSize) {
+                    list.remove(0);
+                }
+                list.add(city);
+                runTime += 5; 
             }
-            // System.out.println(cache);
         }
         
-        return answer;
+        // print(list);
+        
+        
+        return runTime;
+    }
+    
+    private boolean isCacheHit(List<String> list, String word) {
+        return list.contains(word);
+    }
+    
+    private void print(Object o) {
+        System.out.println(o);
     }
 }
