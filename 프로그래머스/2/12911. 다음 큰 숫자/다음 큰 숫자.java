@@ -1,27 +1,29 @@
 class Solution {
-   	public int getOneCount(String input) {
-    	int count = 0;	
-        for (char ch: input.toCharArray()) {
-            if (ch == '1')
-                count++;
-        }    
-        return count;
-    } 
-    public int solution(int n) {
-        
-        String binary1 = Integer.toBinaryString(n);
-        int num1 = getOneCount(binary1);
+    public int solution(int n) {        
 
-        int next = ++n;
-        while (true) {
-        	String binary2 = Integer.toBinaryString(next);
-       		int num2 = getOneCount(binary2);     
-           
-            if (num1 == num2) 
-                return next;
-                
-            next++;
+        for (int num = n + 1; num <= 1000_000; num++) {
+            if (countOne(n) == countOne(num)) {
+                return num; 
+            }
         }
-        // System.out.println(binary1); 
+        
+        return -1;
+    }
+    
+    private int countOne(int num) {
+        String str = Integer.toBinaryString(num);
+
+        int cnt = 0; 
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '1') {
+                cnt++;
+            }
+        }
+        
+        return cnt;
+    }
+    
+    private void print(Object o) {
+        System.out.println(o);
     }
 }
