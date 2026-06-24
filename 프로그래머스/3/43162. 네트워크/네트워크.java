@@ -3,41 +3,42 @@ import java.util.*;
 class Solution {
     List<List<Integer>> graph; 
     boolean[] visited;
-    
+
     public int solution(int n, int[][] computers) {
         
-        int len = computers.length;
         graph = new ArrayList<>();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < n; i++) {
             graph.add(new ArrayList<>());
         }
         
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                // 자기 자신을 제외하고 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 if (i != j && computers[i][j] == 1) {
                     graph.get(i).add(j);
-                    graph.get(j).add(i);
                 }
             }
         }
         
         int networkCnt = 0;
-        visited = new boolean[len];
-        for (int i = 0; i < len; i++) {
-            if (!visited[i]) {
-                visited[i] = true; 
-                bfs(i);
-                networkCnt++;
+        
+        visited = new boolean[n];
+        for (int start = 0; start < n; start++) {
+            if (!visited[start]) {
+                bfs(n, start);
+                networkCnt++;   
             }
         }
+        
+        // print(graph);
         
         return networkCnt;
     }
     
-    private void bfs(int start) {
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start); 
+    private void bfs(int n, int start) {
+        visited[start] = true; 
+        
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.offer(start);
         
         while (!queue.isEmpty()) {
             int curr = queue.poll();
@@ -49,5 +50,9 @@ class Solution {
                 }
             }
         }
+    }
+    
+    private void print(Object o) {
+        System.out.println(o);
     }
 }
