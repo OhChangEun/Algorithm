@@ -1,39 +1,50 @@
 import java.util.*;
 
 class Solution {
-    public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
-        Map<String, Integer> rewardMap = new HashMap<>(); // <직원, 총급여>
-        Map<String, String> parentMap = new HashMap<>(); // <자식, 부모>
+    // 각 이익 계산하는 map 
+    // 부모 - 자식 관계 설정하는 map 
+    public int[] solution(String[] enrolls, String[] referrals, String[] sellers, int[] amounts) {
+        Map<String, Integer> profitMap = new HashMap<>();
+        Map<String, String> parentMap = new HashMap<>();
         
-        int n = enroll.length; 
+        int n = enrolls.length;
+        
         for (int i = 0; i < n; i++) {
-            String child = enroll[i];
-            String parent = referral[i];
+            String enroll = enrolls[i];
+            String referral = referrals[i];
             
-            parentMap.put(child, parent);
+            parentMap.put(enroll, referral);
+            profitMap.put(enroll, 0);
         }
         
-        for (int i = 0; i < seller.length; i++) {
-            String sellerName = seller[i];
-            int reward = amount[i] * 100;
-            
-            while (!sellerName.equals("-") && reward > 0) { // center가 나올 때까지 
-                int parent = reward / 10; // 10%
-                int my = reward - parent; // 90%
+        int sellerNum = sellers.length; 
+        for (int i = 0; i < sellerNum; i++) {
+            String seller = sellers[i];
+            int amount = amounts[i];             
                 
-                rewardMap.put(sellerName, rewardMap.getOrDefault(sellerName, 0) + my);
+            int myProfit = amount * 100; 
+            int parentProfit = 0;
+            while (!seller.equals("-") && myProfit != 0) {
+                parentProfit = myProfit / 10; 
+                myProfit -= parentProfit;
                 
-                sellerName = parentMap.get(sellerName); 
-                reward = parent;
+                profitMap.put(seller, profitMap.getOrDefault(seller, 0) + myProfit); 
+                
+                seller = parentMap.get(seller);
+                myProfit = parentProfit; 
             }
+                
         }
         
         int[] result = new int[n];
         for (int i = 0; i < n; i++) {
-            String sellerName = enroll[i];
-            result[i] = rewardMap.getOrDefault(sellerName, 0);
+            result[i] = profitMap.get(enrolls[i]);
         }
         
         return result;
+    }
+    
+    private void print(Object o) {
+        System.out.println(o);
     }
 }
