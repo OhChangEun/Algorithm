@@ -3,27 +3,34 @@ import java.util.*;
 class Solution {
     public long solution(int n, int[] works) {
         
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        // 10 9 8 2 2 1
+        // 전체적으로 숫자가 낮아져야 제곱의 합이 낮아짐
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        
         for (int work: works) {
             pq.offer(work);
         }
         
-        while (n-- > 0) {
-            if (pq.isEmpty()) return 0; 
-
-            int max = pq.poll();
-            max--; 
+        for (int i = 0; i < n; i++) {
+            if (pq.isEmpty()) 
+                return 0; 
             
-            if (max != 0) 
-                pq.offer(max);
+            int num = pq.poll() - 1;
+            if (num != 0) 
+            	pq.offer(num);
         }
         
-        long result = 0;
+        long answer = 0;
         while (!pq.isEmpty()) {
             int num = pq.poll();
-            result += num * num;
-        } 
+            answer += num * num; 
+        }
         
-        return result;
+        return answer;
     }
+    
+    private void print(Object o) {
+        System.out.println(o);
+    }
+    
 }
