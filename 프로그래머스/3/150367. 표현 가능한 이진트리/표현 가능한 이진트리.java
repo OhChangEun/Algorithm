@@ -1,35 +1,68 @@
 class Solution {
     public int[] solution(long[] numbers) {
         int n = numbers.length; 
-        int[] answer = new int[n]; 
         
+        int[] answer = new int[n];
         for (int i = 0; i < n; i++) {
-            String binStr = Long.toBinaryString(numbers[i]);
-            
-            int len = 1; 
-            int binLen = binStr.length(); 
-            while (len < binLen) {
-                len = len * 2 + 1; 
-            }
-            binStr = "0".repeat(len - binLen) + binStr; 
-            
-            answer[i] = isValidTree(binStr) ? 1: 0;
+            answer[i] = isBinaryTree(numbers[i]);
         }
         return answer;
     }
     
-    public boolean isValidTree(String str) {
-        int n = str.length(); 
-        if (n == 1) return true;
-        int mid = n / 2;
+    // 1
+    
+    // 2~7
+    //  1
+    // 1 1
+    
+    // 8~127
+    //    1
+    //  1   1
+    // 1 1 1 1
+    // 111 1 111
+    
+    // 58
+    //    1
+    //  1   1
+    // 0 1 0 0
+    
+    // 0111010
+    // 32 + 16 + 8 + 2 => 58
+    public int isBinaryTree(long number) {
+        String str = Long.toBinaryString(number);
         
-        String left = str.substring(0, mid); 
+        int len = 1; 
+        while (str.length() > len) {
+            len  = len * 2 + 1;
+        }
+                
+        // 자리수를 1 3 7 15... 
+        // 2 ^ h - 1
+        // 2의 7승으로 127까지 나타내니까 
+        
+        str = "0".repeat(len - str.length()) + str;
+        
+        return check(str) ? 1 : 0;
+    }
+    
+    public boolean check(String str) {
+        if (str.length() == 1) return true; 
+        int mid = str.length() / 2;
+        
+        String left = str.substring(0, mid);
         String right = str.substring(mid + 1); 
         char root = str.charAt(mid);
+        
         if (root == '0') {
-        	if (left.contains("1") || right.contains("1")) 
-                return false;
+           	if (left.contains("1") || right.contains("1")) {
+                return false; 
+            }
         }
-        return isValidTree(left) && isValidTree(right);
+        
+        return check(left) && check(right);
+    }
+    
+    public void print(Object o) {
+        System.out.println(o);
     }
 }
